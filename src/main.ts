@@ -5,7 +5,7 @@ import { envs } from './config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const logger = new Logger('task-service');
+  const logger = new Logger('Task-service');
   logger.log(`Task service running on port ${envs.port}`);
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
