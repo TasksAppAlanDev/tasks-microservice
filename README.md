@@ -17,4 +17,4 @@
 > **⚠️ Advertencia:** En los endpoints de eliminación, el estado de la entidad se cambia a `isActive = false`. Borrar registros de microservicios que comparten datos puede generar problemas de integridad referencial.
 
 
-## Este es el microservicio de tareas que se conecta con el microservicio de tareas
+## Este es el microservicio de tareas que se conecta con el microservicio de usuarios 
