@@ -145,13 +145,21 @@ export class TasksService {
   }
 
   async assignTask(taskId: string, userId: string) {
+    const task = await this.findOne(taskId);
+
+    if (!task) {
+      logger.error(`Task not found with id ${taskId}`);
+      throw new RpcException({
+        message: `Task not found with id ${taskId}`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
     try {
       const response = await firstValueFrom(
         this.httpService.get(`http://localhost:3000/api/users/${userId}`),
       );
 
       const user = response.data;
-      const task = await this.findOne(taskId);
 
       const idToInsert = user.id;
       task.userId = idToInsert;
@@ -173,37 +181,46 @@ export class TasksService {
     }
   }
 
-  async getTasksByUserId(data: { userId: string; paginationDto: PaginationDto }) {
+  async getTasksByUserId(data: {
+    userId: string;
+    paginationDto: PaginationDto;
+  }) {
     const { userId, paginationDto } = data;
     const { page = 1, limit = 10 } = paginationDto;
-  
-    const totalPage = await this.taskRepository.count({
-      where: { isActive: true },
-    });
-  
-    if (totalPage === 0) {
-      logger.error(`This user doesn't have any tasks yet`);
-      return {
-        message: `This user doesn't have any tasks yet`,
-        status: HttpStatus.BAD_REQUEST,
-      };
-    }
-  
-    const lastPage = Math.ceil(totalPage / limit);
+
     try {
-      const response = await firstValueFrom(
+      const totalPage = await this.taskRepository.count({
+        where: {
+          userId,
+          isActive: true,
+        },
+      });
+
+      if (totalPage === 0) {
+        logger.error(`This user doesn't have any tasks yet`);
+        return {
+          message: `This user doesn't have any tasks yet`,
+          status: HttpStatus.BAD_REQUEST,
+        };
+      }
+
+      const lastPage = Math.ceil(totalPage / limit);
+
+      await firstValueFrom(
         this.httpService.get(`http://localhost:3000/api/users/${userId}`),
       );
-  
+
+      const tasks = await this.taskRepository.find({
+        take: limit,
+        skip: (page - 1) * limit,
+        where: {
+          userId,
+          isActive: true,
+        },
+      });
+
       return {
-        data: await this.taskRepository.find({
-          take: limit,
-          skip: (page - 1) * limit,
-          where: {
-            userId,
-            isActive: true,
-          },
-        }),
+        data: tasks,
         meta: {
           total: totalPage,
           page: page,
