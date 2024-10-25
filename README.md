@@ -8,11 +8,11 @@
 
 ## 2. Instalar dependencias
 
-## 3. Ejecutar ` docker compose up -d` para levantar la imagen de docker de postgres
+## 3. Ejecutar ``` docker compose up -d``` para levantar la imagen de docker de postgres
 
-## 4. Crear archivo `.env` basado en el `.env.template`
+## 4. Crear archivo ```.env``` basado en el ```.env.template```
 
-## 5. Ejecutar `npm run start:dev`
+## 5. Ejecutar ```npm run start:dev```
 
 > **⚠️ Advertencia:** En los endpoints de eliminación, el estado de la entidad se cambia a `isActive = false`. Borrar registros de microservicios que comparten datos puede generar problemas de integridad referencial.
 
